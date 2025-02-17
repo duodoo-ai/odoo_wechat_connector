@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ewi_interface_manager, access.ewi_interface_manager,model_ewi_interface,,1,1,1,1
+access_ewi_wechat_config_manager, access.ewi_wechat_config_manager,model_ewi_wechat_config,,1,1,1,1

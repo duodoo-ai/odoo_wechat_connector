@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="ewi_inherit_view_staff_employee_tree" model="ir.ui.view">
+        <field name="name">企微员工</field>
+        <field name="model">staff</field>
+        <field name="inherit_id" ref="staff.view_staff_employee_tree"/>
+        <field name="arch" type="xml">
+            <field name='active' position='after'>
+                <field name="ewc_enable" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ewi_inherit_view_staff_employee_form" model="ir.ui.view">
+        <field name="name">企微员工</field>
+        <field name="model">staff</field>
+        <field name="inherit_id" ref="staff.view_staff_employee_form"/>
+        <field name="arch" type="xml">
+            <field name='user_id' position='after'>
+                <field name="ewc_enable"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_ewi_inherit_view_staff_employee" model="ir.actions.act_window">
+        <field name="name">企微员工</field>
+        <field name="res_model">staff</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids"
+           eval="[(5, 0, 0),
+                  (0, 0, {'view_mode': 'list', 'view_id': ref('ewi_inherit_view_staff_employee_tree')}),
+                  (0, 0, {'view_mode': 'form', 'view_id': ref('ewi_inherit_view_staff_employee_form')}),
+                  ]"/>
+    </record>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<odoo>
+    <menuitem id="menu_ewi_root" name="企业微信" sequence="1099"
+              web_icon="odoo_wechat_connector,static/description/icon.png"/>
+    <!--二级菜单-->
+    <menuitem id="sub_ewi_interface"
+              name="企微接口"
+              sequence="10"
+              action="action_ewi_interface"
+              parent="menu_ewi_root"/>
+    <!--二级菜单-->
+    <menuitem name="企微配置"
+              id="sub_ewi_wechat_config"
+              action="action_ewi_wechat_config"
+              parent="menu_ewi_root"
+              sequence="200"/>
+    <!--三级菜单-->
+<!--    <menuitem id="menu_ewi_inherit_view_company" name="企业信息" sequence="1"-->
+<!--              action="action_ewi_inherit_view_company"-->
+<!--              parent="menu_ewi_res_config"/>-->
+<!--    <menuitem id="menu_ewi_inherit_view_staff_employee" name="员工信息" sequence="10"-->
+<!--              action="action_ewi_inherit_view_staff_employee"-->
+<!--              parent="menu_ewi_res_config"/>-->
+<!--    <menuitem id="menu_ewi_inherit_view_staff_department" name="部门信息" sequence="20"-->
+<!--              action="action_ewi_inherit_view_staff_department"-->
+<!--              parent="menu_ewi_res_config"/>-->
+</odoo>

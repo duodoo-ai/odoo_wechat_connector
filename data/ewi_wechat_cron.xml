@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="data_phoenix_token" model="phoenix.token">
+            <field name="name">获取PhoenixAPI网关接口调用token</field>
+            <field name="grant_type">password</field>
+            <field name="username">admin</field>
+            <field name="password">admin</field>
+            <field name="url">http://172.20.20.34</field>
+            <field name="port">14050</field>
+        </record>
+        <!--定义PhoenixAPI平台TOKEN默认数据-->
+        <!--定义PhoenixAPI平台TOKEN默认数据-->
+        <!--定义PhoenixAPI平台TOKEN默认数据-->
+        <record id="data_phoenix_audible_address" model="phoenix.audible.address">
+            <field name="name">连接声光设备地址</field>
+            <field name="address">192.168.0.100</field>
+            <field name="port">8101</field>
+        </record>
+    </data>
+</odoo>

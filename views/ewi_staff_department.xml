@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record id="ewi_inherit_view_staff_department_tree" model="ir.ui.view">
+        <field name="name">企微部门</field>
+        <field name="model">shr.department</field>
+        <field name="inherit_id" ref="staff.view_staff_department_tree"/>
+        <field name="arch" type="xml">
+            <field name='id' position='after'>
+                <field name="ewc_dept_order" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ewi_inherit_view_staff_department_form" model="ir.ui.view">
+        <field name="name">企微部门</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="staff.view_staff_department_form"/>
+        <field name="arch" type="xml">
+            <field name='is_leaf' position='after'>
+                <field name="ewc_dept_order" readonly="1" force_save="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_ewi_inherit_view_staff_department" model="ir.actions.act_window">
+        <field name="name">企微部门</field>
+        <field name="res_model">hr.department</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids"
+           eval="[(5, 0, 0),
+                  (0, 0, {'view_mode': 'list', 'view_id': ref('ewi_inherit_view_staff_department_tree')}),
+                  (0, 0, {'view_mode': 'form', 'view_id': ref('ewi_inherit_view_staff_department_form')}),
+                  ]"/>
+    </record>
+</odoo>

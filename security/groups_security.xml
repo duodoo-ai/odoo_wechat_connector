@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<odoo>
+    <!-- 创建类别 -->
+    <!-- 以下为功能模块相关，给每个主菜单设置一个组便于理解 -->
+    <record id="module_category_enterprise_wechat_interface" model="ir.module.category">
+        <field name="name">企微接口权限组</field>
+    </record>
+    <!-- 创建基于类别的权限组 -->
+    <record id="group_ewi_manager" model="res.groups">
+        <field name="name">企微接口管理员</field>
+        <field name="category_id" ref="module_category_enterprise_wechat_interface" />
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="comment">用于管理移动审批模块</field>
+    </record>
+</odoo>
