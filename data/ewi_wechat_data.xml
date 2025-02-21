@@ -8,7 +8,7 @@
             <field name="name">获取企业微信接口调用token</field>
             <field name="token_url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>
             <field name="corp_id">ww5a789309ca91ec7e</field>
-            <field name="corp_secret">njqm0RDRzZAdNeSGqUpuAAm909LxdDQjIzPB1RzMKuU</field>
+            <field name="corp_secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
             <field name="access_token">''</field>
             <field name="department_id">1</field>
 
