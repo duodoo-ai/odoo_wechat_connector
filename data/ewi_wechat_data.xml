@@ -5,12 +5,8 @@
         <!-- 授权信息 -->
         <!-- 授权信息 -->
         <record id="ewi_wechat_config_0" model="ewi.wechat.config">
-            <field name="name">获取企业微信接口调用token</field>
-            <field name="token_url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>
+            <field name="name">企业微信接口</field>
             <field name="corp_id">ww5a789309ca91ec7e</field>
-            <field name="corp_secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
-            <field name="access_token">''</field>
-            <field name="department_id">1</field>
 
             <field name="sp_AgentId">3010040</field>
             <field name="sp_Secret">ub3ELV5X9d1JGkwmC9If_qr0szG78ogYBnGKZnCQPEg</field>
@@ -21,18 +17,12 @@
 
 
         <!-- 授权信息 -->
-<!--        <record id="ewi_interface_0" model="ewi.interface">-->
-<!--            <field name="name">获取token</field>-->
-<!--            <field name="description">获取token</field>-->
-<!--            <field name="parameter">''</field>-->
-<!--            <field name="url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>-->
-<!--        </record>-->
-<!--        <record id="ewi_interface_00" model="ewi.interface">-->
-<!--            <field name="name">获取审批token</field>-->
-<!--            <field name="description">获取审批token</field>-->
-<!--            <field name="parameter">''</field>-->
-<!--            <field name="url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>-->
-<!--        </record>-->
+        <record id="ewi_interface_09" model="ewi.interface">
+            <field name="name">通讯录同步授权</field>
+            <field name="description">通讯录授权AccessToken同步</field>
+            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
+            <field name="url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>
+        </record>
          <!-- 应用消息 -->
         <record id="ewi_interface_10" model="ewi.interface">
             <field name="name">发送应用消息</field>
@@ -47,7 +37,6 @@
             <field name="name">创建成员</field>
             <field name="description">创建成员</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -56,7 +45,6 @@
             <field name="name">更新成员</field>
             <field name="description">更新成员</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -65,7 +53,6 @@
             <field name="name">批量删除成员</field>
             <field name="description">批量删除成员</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/batchdelete?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -74,7 +61,6 @@
             <field name="name">获取成员ID列表</field>
             <field name="description">获取成员ID列表</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -84,7 +70,7 @@
             <field name="name">创建部门</field>
             <field name="description">创建部门</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
+            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -93,7 +79,7 @@
             <field name="name">更新部门</field>
             <field name="description">更新部门</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
+            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -102,7 +88,7 @@
             <field name="name">删除部门</field>
             <field name="description">删除部门</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
+            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/delete?access_token={}&amp;id={}</field>
             <field name="access_token">''</field>
         </record>
@@ -111,7 +97,7 @@
             <field name="name">获取子部门ID列表</field>
             <field name="description">获取子部门ID列表</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
+            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/simplelist?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -121,7 +107,6 @@
             <field name="name">获取审批模板详情</field>
             <field name="description">获取审批模板详情</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/gettemplatedetail?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -129,7 +114,6 @@
             <field name="name">提交审批申请</field>
             <field name="description">提交审批申请</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/applyevent?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -137,7 +121,6 @@
             <field name="name">批量获取审批单号</field>
             <field name="description">批量获取审批单号</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/getapprovalinfo?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -145,7 +128,6 @@
             <field name="name">获取审批申请详情</field>
             <field name="description">获取审批申请详情</field>
             <field name="AgentId">AgentId</field>
-            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/getapprovaldetail?access_token={}</field>
             <field name="access_token">''</field>
         </record>

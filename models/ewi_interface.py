@@ -21,33 +21,70 @@ class EWIInterface(models.Model):
 
     name = fields.Char(string='接口名称', required=True, tracking=True)
     description = fields.Char(string='接口说明', tracking=True)
-    AgentId = fields.Char(string='应用AgentId')
-    Secret = fields.Char(string='应用Secret')
-    url = fields.Text(string='应用TokenUrl')
-    access_token = fields.Text(string='应用Token', help='通过corp_id，Secret请求返回')
-    errcode = fields.Char(string='应用errcode', help='返回errcode')
-    errmsg = fields.Char(string='应用errmsg', help='返回errmsg')
-    expires_in = fields.Char(string='应用expires_in', help='返回expires_in')
+    AgentId = fields.Char(string='应用AgentId', help='本项在应用对接的时候应填入')
+    Secret = fields.Char(string='应用凭证密钥Secret', help='应用的凭证密钥，注意应用需要是启用状态，获取方式参考：术语说明-secret')
+    url = fields.Text(string='TokenUrl')
+    access_token = fields.Text(string='Token', help='获取到的凭证，最长为512字节，通过corp_id，Secret请求返回')
+    errcode = fields.Char(string='errcode', help='出错返回码，为0表示成功，非0表示调用失败')
+    errmsg = fields.Char(string='errmsg', help='返回码提示语')
+    expires_in = fields.Char(string='expires_in', help='凭证的有效时间（秒）')
 
     def btn_execute(self):
         """
         按钮执行函数，可用于触发一系列操作
         """
-        self.send_message()     # 发送各种应用消息
+        if self.name == '通讯录同步授权':
+            self.gen_contacts_access_token()     # 获得连接Token，通讯录授权
+        if self.name == '发送应用消息':
+            self.send_message()     # 发送各种应用消息
         # # 示例：调用部门相关接口
-        # self.new_department()
+        if self.name == '创建部门':
+            self.new_department()
         # self.update_department()
         # self.delete_department()
         # # 调用人员相关接口
         # self.gen_employee_userid_list()
         # self.new_employee()
 
-    def gen_application_access_token(self):
+    def gen_contacts_access_token(self):
         """授权信息，获取企微通讯录Access Token"""
+        access_obj = self.env['ewi.wechat.config']
+        access_record = access_obj.search([('name', '=', '企业微信接口')])
+        corp_id = access_record.corp_id
+        corp_secret = self.Secret
+        if not corp_id or not corp_secret:
+            _logger.info(f"通讯录授权信息{corp_id}----{corp_secret}为空，请填入！")
+            return
+        token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={corp_secret}"
+        _logger.info(f"通讯录访问 Token_url -----  {token_url}")
+        for line in self:
+            try:
+                ret = requests.get(token_url, headers=headers)
+                ret.raise_for_status()
+                result = ret.json()
+                if result.get('errcode') == 0:
+                    line.write({'access_token': result['access_token'],
+                                         'errcode': result['errcode'],
+                                         'errmsg': result['errmsg'],
+                                         'expires_in': result['expires_in'],
+                                         })
+                    return result['access_token']
+                else:
+                    _logger.error(f"获取企微通讯录Access Token失败: {result.get('errmsg')}")
+                    return None
+            except requests.RequestException as e:
+                _logger.error(f"请求获取企微通讯录Access Token时出错: {str(e)}")
+                return None
+
+    def gen_application_access_token(self):
+        """授权信息，获取企微应用授权Access Token"""
         access_obj = self.env['ewi.wechat.config']
         access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
         corp_id = access_record.corp_id
-        corp_secret = self.Secret
+        corp_secret = self.Secret       # 通过每个应用动态获得
+        if not corp_id or not corp_secret:
+            _logger.info(f"应用授权信息{corp_secret}为空，请填入！")
+            return
         token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={corp_secret}"
         for line in self:
             try:
@@ -94,35 +131,43 @@ class EWIInterface(models.Model):
 
     def new_department(self):
         """部门接口，创建部门"""
-        token = self.gen_access_token()
-        if not token:
+        access_token = self.gen_contacts_access_token()
+        if not access_token:
+            _logger.info(f"创建部门-----access_token------凭证为空 {access_token}")
             return
-        get_depart_url = self.with_user(2).env['ewi.interface'].search([('name', '=', '获取子部门ID列表')]).url
-        create_depart_url = self.with_user(2).env['ewi.interface'].search([('name', '=', '创建部门')]).url
-
-        depart_records = self.with_user(2).env['hr.department'].search([])
+        # 去拿Odoo本地的组织架构
+        depart_obj = self.with_user(2).env['hr.department']
+        depart_records = depart_obj.search([])
         odoo_dept_list = [i['id'] for i in depart_records]  # odoo中正常使用的部门ID
-
-        ret = requests.get(get_depart_url.format(token), headers=headers)  # 请求企业微信正常使用的部门ID
-        text = json.loads(ret.text)
-        wechat_dept_list = [i['id'] for i in text['department_id']]  # 企业微信正常使用的部门ID
-
-        create_dept_list = [i for i in odoo_dept_list if i not in wechat_dept_list]  # 需要创建的部门ID
+        # 去请求企业微信组织架构
+        search_token_url = f"https://qyapi.weixin.qq.com/cgi-bin/department/simplelist?access_token={access_token}"
+        response = requests.get(search_token_url, headers=headers)  # 请求企业微信正常使用的部门ID
+        _logger.info(f"企业微信请求部门状态 ----【{response.status_code}】 ----")
+        create_dept_list = []
+        try:
+            if response.status_code == 200:
+                ret = json.loads(response.text)
+                wechat_dept_list = [i['id'] for i in ret['department_id']]  # 企业微信正常使用的部门ID
+                create_dept_list = [i for i in odoo_dept_list if i not in wechat_dept_list]  # 需要创建的部门ID
+        except Exception as e:
+            _logger.info(f"企业微信请求部门有误 ---- {e} ----")
 
         # 需要创建的部门ID
-        for i in create_dept_list:
-            record_id = self.with_user(2).env['hr.department'].search([('id', '=', i)])
-            """一级部门/公司跳过不处理，需手动维护ODOO与企业微信一级部门名称一致"""
-            if not record_id.parent_id.id:
+        create_token_url = f"https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token={access_token}"
+        print(create_dept_list)
+        for wid in create_dept_list:
+            # 一级部门/公司跳过不处理，需手动维护ODOO与企业微信一级部门 名称一致
+            depart_id = depart_obj.search([('id', '=', wid)])
+            if not depart_id.parent_id.id:
                 continue
             data = {
-                "name": record_id.name,
-                "parentid": record_id.parent_id.id or False,
-                "id": record_id.id,
-                "order": record_id.ewc_dept_order,
+                "name": depart_id.name,
+                "parentid": depart_id.parent_id.id or False,
+                "id": depart_id.id,
+                "order": depart_id.id,
             }
-            ret = requests.post(create_depart_url.format(token), data=json.dumps(data), headers=headers)
-            if json.loads(ret.text)['errcode'] == 0:
+            ret = requests.post(create_token_url, data=json.dumps(data), headers=headers)
+            if ret.status_code == 200:
                 _logger.info("创建部门成功{}".format(json.loads(ret.text)))
             else:
                 _logger.error("创建部门失败{}".format(json.loads(ret.text)))

@@ -5,15 +5,9 @@
         <field name="model">ewi.wechat.config</field>
         <field name="arch" type="xml">
             <list string='接口认证信息'>
-                <button name="gen_access_token" string="刷新密钥" type="object" icon="fa-search-plus"/>
+                <button name="gen_approval_access_token" string="刷新密钥" type="object" class="btn-primary" icon="fa-search-plus"/>
+                <field name="name"/>
                 <field name="corp_id"/>
-                <field name="token_url"/>
-                <field name="corp_secret"/>
-                <field name="department_id"/>
-                <field name="access_token"/>
-                <field name="errcode" readonly="1"/>
-                <field name="errmsg" readonly="1"/>
-                <field name="expires_in" readonly="1"/>
             </list>
         </field>
     </record>
@@ -23,22 +17,13 @@
         <field name="model">ewi.wechat.config</field>
         <field name="arch" type="xml">
            <form string="接口认证信息" create="0" delete="0">
-               <header>
-                    <button name="gen_access_token" string="刷新密钥" type="object" icon="fa-search-plus"/>
+                <header>
+                    <button name="gen_approval_access_token" string="刷新密钥" type="object" class="btn-primary" icon="fa-search-plus"/>
                 </header>
                 <sheet name="odoo_wechat">
                     <group string="企业ID">
                         <field name="name" readonly="1"/>
                         <field name="corp_id"/>
-                    </group>
-                    <group string="通讯录授权配置">
-                        <field name="token_url"/>
-                        <field name="corp_secret"/>
-                        <field name="department_id"/>
-                        <field name="access_token" readonly="1"/>
-                        <field name="errcode" readonly="1"/>
-                        <field name="errmsg" readonly="1"/>
-                        <field name="expires_in" readonly="1"/>
                     </group>
                     <group string="审批应用对接配置">
                         <field name="sp_AgentId"/>
