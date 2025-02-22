@@ -31,9 +31,9 @@ class EwiWechatConfig(models.Model):
                               help='路径：管理工具-通讯录同步-Secret-查看')
     access_token = fields.Text(string='通讯录Token', help='通过token_url，corp_id，corp_secret，请求返回')
     department_id = fields.Char(string='公司部门id', default=1)
-    errcode = fields.Char(string='errcode', help='返回errcode')
-    errmsg = fields.Char(string='errmsg', help='返回errmsg')
-    expires_in = fields.Char(string='expires_in', help='返回expires_in')
+    errcode = fields.Char(string='通讯录errcode', help='返回errcode')
+    errmsg = fields.Char(string='通讯录errmsg', help='返回errmsg')
+    expires_in = fields.Char(string='通讯录expires_in', help='返回expires_in')
 
     # 定义“审批”应用对接信息
     sp_AgentId = fields.Char(string='审批AgentId',

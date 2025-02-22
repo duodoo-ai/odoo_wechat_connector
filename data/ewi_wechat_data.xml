@@ -37,7 +37,8 @@
         <record id="ewi_interface_10" model="ewi.interface">
             <field name="name">发送应用消息</field>
             <field name="description">发送应用消息</field>
-            <field name="corpsecret">TbIuS1j9bdGRbOe3OycUq9tAhC0H04EFIPVK5boR_3k</field>
+            <field name="AgentId">1000008</field>
+            <field name="Secret">TbIuS1j9bdGRbOe3OycUq9tAhC0H04EFIPVK5boR_3k</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -45,7 +46,8 @@
         <record id="ewi_interface_11" model="ewi.interface">
             <field name="name">创建成员</field>
             <field name="description">创建成员</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -53,7 +55,8 @@
         <record id="ewi_interface_12" model="ewi.interface">
             <field name="name">更新成员</field>
             <field name="description">更新成员</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -61,7 +64,8 @@
         <record id="ewi_interface_13" model="ewi.interface">
             <field name="name">批量删除成员</field>
             <field name="description">批量删除成员</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/batchdelete?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -69,7 +73,8 @@
         <record id="ewi_interface_14" model="ewi.interface">
             <field name="name">获取成员ID列表</field>
             <field name="description">获取成员ID列表</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -78,7 +83,8 @@
         <record id="ewi_interface_15" model="ewi.interface">
             <field name="name">创建部门</field>
             <field name="description">创建部门</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -86,7 +92,8 @@
         <record id="ewi_interface_16" model="ewi.interface">
             <field name="name">更新部门</field>
             <field name="description">更新部门</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -94,7 +101,8 @@
         <record id="ewi_interface_17" model="ewi.interface">
             <field name="name">删除部门</field>
             <field name="description">删除部门</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/delete?access_token={}&amp;id={}</field>
             <field name="access_token">''</field>
         </record>
@@ -102,7 +110,8 @@
         <record id="ewi_interface_18" model="ewi.interface">
             <field name="name">获取子部门ID列表</field>
             <field name="description">获取子部门ID列表</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/department/simplelist?access_token={}</field>
             <field name="access_token">''</field>
         </record>
@@ -111,28 +120,32 @@
         <record id="ewi_interface_19" model="ewi.interface">
             <field name="name">获取审批模板详情</field>
             <field name="description">获取审批模板详情</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/gettemplatedetail?access_token={}</field>
             <field name="access_token">''</field>
         </record>
         <record id="ewi_interface_20" model="ewi.interface">
             <field name="name">提交审批申请</field>
             <field name="description">提交审批申请</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/applyevent?access_token={}</field>
             <field name="access_token">''</field>
         </record>
         <record id="ewi_interface_21" model="ewi.interface">
             <field name="name">批量获取审批单号</field>
             <field name="description">批量获取审批单号</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/getapprovalinfo?access_token={}</field>
             <field name="access_token">''</field>
         </record>
         <record id="ewi_interface_22" model="ewi.interface">
             <field name="name">获取审批申请详情</field>
             <field name="description">获取审批申请详情</field>
-            <field name="corpsecret">''</field>
+            <field name="AgentId">AgentId</field>
+            <field name="Secret">''</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/oa/getapprovaldetail?access_token={}</field>
             <field name="access_token">''</field>
         </record>

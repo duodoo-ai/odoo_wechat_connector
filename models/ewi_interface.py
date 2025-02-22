@@ -21,12 +21,13 @@ class EWIInterface(models.Model):
 
     name = fields.Char(string='接口名称', required=True, tracking=True)
     description = fields.Char(string='接口说明', tracking=True)
-    corpsecret = fields.Char(string='应用corpsecret')
-    url = fields.Text(string='接口地址')
+    AgentId = fields.Char(string='应用AgentId')
+    Secret = fields.Char(string='应用Secret')
+    url = fields.Text(string='应用TokenUrl')
     access_token = fields.Text(string='应用Token', help='通过corp_id，Secret请求返回')
-    errcode = fields.Char(string='errcode', help='返回errcode')
-    errmsg = fields.Char(string='errmsg', help='返回errmsg')
-    expires_in = fields.Char(string='expires_in', help='返回expires_in')
+    errcode = fields.Char(string='应用errcode', help='返回errcode')
+    errmsg = fields.Char(string='应用errmsg', help='返回errmsg')
+    expires_in = fields.Char(string='应用expires_in', help='返回expires_in')
 
     def btn_execute(self):
         """
@@ -46,7 +47,7 @@ class EWIInterface(models.Model):
         access_obj = self.env['ewi.wechat.config']
         access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
         corp_id = access_record.corp_id
-        corp_secret = self.corpsecret
+        corp_secret = self.Secret
         token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={corp_secret}"
         for line in self:
             try:
@@ -54,7 +55,6 @@ class EWIInterface(models.Model):
                 ret.raise_for_status()
                 result = ret.json()
                 if result.get('errcode') == 0:
-                    print(result)
                     line.write({'access_token': result['access_token'],
                                          'errcode': result['errcode'],
                                          'errmsg': result['errmsg'],
@@ -77,7 +77,7 @@ class EWIInterface(models.Model):
            # "toparty" : "PartyID1|PartyID2",
            # "totag" : "TagID1 | TagID2",
            # "msgtype" : "text",
-           "agentid" : 1000004,
+           "agentid" : self.AgentId,
            "text" : {
                "content" : "你的快递已到，请携带工卡前往邮件中心领取。聪明避开排队。"
            },
