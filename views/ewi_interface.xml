@@ -7,9 +7,10 @@
             <list string="企微接口" import="false" default_order="id">
                 <field name="name"/>
                 <field name="description" optional="show"/>
-                <field name="parameter" optional="show"/>
+                <field name="corpsecret" optional="show"/>
                 <field name="url" optional="show"/>
-                <button name="btn_execute" string="执行此接口" type="object" class="btn-primary"/>
+                <field name="errmsg" optional="show"/>
+                <button name="btn_execute" string="执行此接口" type="object" icon="fa-search-plus"/>
                 <field name="id" optional="hide"/>
             </list>
         </field>
@@ -21,18 +22,22 @@
         <field name="arch" type="xml">
             <form string="企微接口">
                 <header>
-                    <button name="btn_execute" string="执行此接口" type="object" class="btn-primary"/>
+                    <button name="btn_execute" string="执行此接口" type="object" icon="fa-search-plus"/>
                 </header>
                 <sheet string="ewi_interface">
                     <group>
                         <group>
                             <field name="name"/>
                             <field name="description"/>
-                            <field name="parameter"/>
+                            <field name="corpsecret"/>
+                            <field name="url"/>
                         </group>
                     </group>
                     <group>
-                        <field name="url"/>
+                        <field name="access_token"/>
+                        <field name="errcode"/>
+                        <field name="errmsg"/>
+                        <field name="expires_in"/>
                     </group>
                 </sheet>
                 <oe_chatter/>

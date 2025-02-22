@@ -31,7 +31,9 @@ class EwiWechatConfig(models.Model):
                               help='路径：管理工具-通讯录同步-Secret-查看')
     access_token = fields.Text(string='通讯录Token', help='通过token_url，corp_id，corp_secret，请求返回')
     department_id = fields.Char(string='公司部门id', default=1)
-    msg = fields.Char(string='接口请求结果', help='返回code，成功success ')
+    errcode = fields.Char(string='errcode', help='返回errcode')
+    errmsg = fields.Char(string='errmsg', help='返回errmsg')
+    expires_in = fields.Char(string='expires_in', help='返回expires_in')
 
     # 定义“审批”应用对接信息
     sp_AgentId = fields.Char(string='审批AgentId',
@@ -62,7 +64,11 @@ class EwiWechatConfig(models.Model):
             ret.raise_for_status()
             result = ret.json()
             if result.get('errcode') == 0:
-                access_record.write({'access_token': result['access_token']})
+                access_record.write({'access_token': result['access_token'],
+                                     'errcode': result['errcode'],
+                                     'errmsg': result['errmsg'],
+                                     'expires_in': result['expires_in'],
+                                     })
             else:
                 _logger.error(f"获取企微通讯录Access Token失败: {result.get('errmsg')}")
                 return None
@@ -72,7 +78,6 @@ class EwiWechatConfig(models.Model):
 
     def gen_approval_access_token(self):
         """授权信息，获取企微“审批”应用Access Token"""
-        # 假设审批应用的secret存储在配置中
         access_obj = self.env['ewi.wechat.config']
         access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
         corp_id = access_record.corp_id

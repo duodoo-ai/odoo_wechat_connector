@@ -11,7 +11,9 @@
                 <field name="corp_secret"/>
                 <field name="department_id"/>
                 <field name="access_token"/>
-                <field name="msg"/>
+                <field name="errcode" readonly="1"/>
+                <field name="errmsg" readonly="1"/>
+                <field name="expires_in" readonly="1"/>
             </list>
         </field>
     </record>
@@ -29,11 +31,14 @@
                         <field name="name" readonly="1"/>
                         <field name="corp_id"/>
                     </group>
-                    <group string="通讯录对接配置">
+                    <group string="通讯录授权配置">
                         <field name="token_url"/>
                         <field name="corp_secret"/>
                         <field name="department_id"/>
-                        <field name="access_token"/>
+                        <field name="access_token" readonly="1"/>
+                        <field name="errcode" readonly="1"/>
+                        <field name="errmsg" readonly="1"/>
+                        <field name="expires_in" readonly="1"/>
                     </group>
                     <group string="审批应用对接配置">
                         <field name="sp_AgentId"/>

@@ -21,20 +21,76 @@ class EWIInterface(models.Model):
 
     name = fields.Char(string='接口名称', required=True, tracking=True)
     description = fields.Char(string='接口说明', tracking=True)
-    parameter = fields.Char(string='参数')
+    corpsecret = fields.Char(string='应用corpsecret')
     url = fields.Text(string='接口地址')
+    access_token = fields.Text(string='应用Token', help='通过corp_id，Secret请求返回')
+    errcode = fields.Char(string='errcode', help='返回errcode')
+    errmsg = fields.Char(string='errmsg', help='返回errmsg')
+    expires_in = fields.Char(string='expires_in', help='返回expires_in')
 
     def btn_execute(self):
         """
         按钮执行函数，可用于触发一系列操作
         """
-        # 示例：调用部门相关接口
-        self.new_department()
-        self.update_department()
-        self.delete_department()
-        # 调用人员相关接口
-        self.gen_employee_userid_list()
-        self.new_employee()
+        self.send_message()     # 发送各种应用消息
+        # # 示例：调用部门相关接口
+        # self.new_department()
+        # self.update_department()
+        # self.delete_department()
+        # # 调用人员相关接口
+        # self.gen_employee_userid_list()
+        # self.new_employee()
+
+    def gen_application_access_token(self):
+        """授权信息，获取企微通讯录Access Token"""
+        access_obj = self.env['ewi.wechat.config']
+        access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
+        corp_id = access_record.corp_id
+        corp_secret = self.corpsecret
+        token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={corp_secret}"
+        for line in self:
+            try:
+                ret = requests.get(token_url, headers=headers)
+                ret.raise_for_status()
+                result = ret.json()
+                if result.get('errcode') == 0:
+                    print(result)
+                    line.write({'access_token': result['access_token'],
+                                         'errcode': result['errcode'],
+                                         'errmsg': result['errmsg'],
+                                         'expires_in': result['expires_in'],
+                                         })
+                    return result['access_token']
+                else:
+                    _logger.error(f"获取企业应用Access Token失败: {result.get('errmsg')}")
+                    return None
+            except requests.RequestException as e:
+                _logger.error(f"获取企业应用Access Token时出错: {str(e)}")
+                return None
+
+    def send_message(self):
+        """发送各种应用消息"""
+        access_token = self.gen_application_access_token()
+        token_url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}"
+        data = {
+           # "touser" : "UserID1|UserID2|UserID3",
+           # "toparty" : "PartyID1|PartyID2",
+           # "totag" : "TagID1 | TagID2",
+           # "msgtype" : "text",
+           "agentid" : 1000004,
+           "text" : {
+               "content" : "你的快递已到，请携带工卡前往邮件中心领取。聪明避开排队。"
+           },
+           "safe":0,
+           "enable_id_trans": 0,
+           "enable_duplicate_check": 0,
+           "duplicate_check_interval": 1800
+        }
+        ret = requests.post(token_url, data=json.dumps(data), headers=headers)
+        if json.loads(ret.text)['errcode'] == 0:
+            _logger.info("发送应用消息成功{}".format(json.loads(ret.text)))
+        else:
+            _logger.error("发送应用消息失败{}".format(json.loads(ret.text)))
 
     def new_department(self):
         """部门接口，创建部门"""
