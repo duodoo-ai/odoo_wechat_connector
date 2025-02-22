@@ -16,7 +16,7 @@ headers = {'content-type': 'application/json'}
 
 class EwiWechatConfig(models.Model):
     _name = 'ewi.wechat.config'
-    _description = '企业微信接口'
+    _description = '接口认证信息'
 
     # 定义接口基本信息
     name = fields.Char(string='Auth接口名称', default='获取企业微信接口调用token', help='API名称')
@@ -50,10 +50,44 @@ class EwiWechatConfig(models.Model):
                                     default='vzpWA1cL9D8vPwgFOqTjFaysLhNbV36kWcXODL6knxf',
                                     help='路径：审批-接收消息服务器配置-EncodingAESKey')
 
-    def action_token_from_wechat(self):
-        # ===========================Token===============================
-        # Step1：配置host地址、端口号、appKey和appSecret
-        # api config
-        # phoenix = self.env['ewi.wechat.config'].search([('name', '=', '获取企业微信接口调用token')])
-        # url_token = '{}'.format(phoenix.url + ':' + phoenix.port + '/token')
-        pass
+    def gen_access_token(self):
+        """授权信息，获取企微通讯录Access Token"""
+        access_obj = self.env['ewi.wechat.config']
+        access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
+        corp_id = access_record.corp_id
+        corp_secret = access_record.corp_secret
+        token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={corp_secret}"
+        try:
+            ret = requests.get(token_url, headers=headers)
+            ret.raise_for_status()
+            result = ret.json()
+            if result.get('errcode') == 0:
+                access_record.write({'access_token': result['access_token']})
+            else:
+                _logger.error(f"获取企微通讯录Access Token失败: {result.get('errmsg')}")
+                return None
+        except requests.RequestException as e:
+            _logger.error(f"请求获取企微通讯录Access Token时出错: {str(e)}")
+            return None
+
+    def gen_approval_access_token(self):
+        """授权信息，获取企微“审批”应用Access Token"""
+        # 假设审批应用的secret存储在配置中
+        access_obj = self.env['ewi.wechat.config']
+        access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
+        corp_id = access_record.corp_id
+        approval_secret = access_record.approval_secret
+        token_url = f"https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={corp_id}&corpsecret={approval_secret}"
+        try:
+            ret = requests.get(token_url, headers=headers)
+            ret.raise_for_status()
+            result = ret.json()
+            if result.get('errcode') == 0:
+                access_token = result.get('access_token')
+                return access_token
+            else:
+                _logger.error(f"获取企微“审批”应用Access Token失败: {result.get('errmsg')}")
+                return None
+        except requests.RequestException as e:
+            _logger.error(f"请求获取企微“审批”应用Access Token时出错: {str(e)}")
+            return None
