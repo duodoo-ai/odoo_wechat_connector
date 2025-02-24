@@ -35,7 +35,7 @@ class EWIInterface(models.Model):
         """
         if self.name == '通讯录同步授权':
             self.gen_contacts_access_token()     # 获得连接Token，通讯录授权
-        if self.name == '发送应用消息':
+        if self.name == 'R2':
             self.send_message()     # 发送各种应用消息
         # # 示例：调用部门相关接口
         if self.name == '创建部门':
@@ -44,7 +44,8 @@ class EWIInterface(models.Model):
         # self.delete_department()
         # # 调用人员相关接口
         # self.gen_employee_userid_list()
-        # self.new_employee()
+        if self.name == '创建成员':
+            self.new_employee()
 
     def gen_contacts_access_token(self):
         """授权信息，获取企微通讯录Access Token"""
@@ -79,9 +80,10 @@ class EWIInterface(models.Model):
     def gen_application_access_token(self):
         """授权信息，获取企微应用授权Access Token"""
         access_obj = self.env['ewi.wechat.config']
-        access_record = access_obj.search([('name', '=', '获取企业微信接口调用token')])
+        access_record = access_obj.search([('name', '=', '企业微信接口')])
         corp_id = access_record.corp_id
         corp_secret = self.Secret       # 通过每个应用动态获得
+        _logger.info(f"应用授权信息{corp_id} --- {corp_secret}")
         if not corp_id or not corp_secret:
             _logger.info(f"应用授权信息{corp_secret}为空，请填入！")
             return
@@ -108,12 +110,15 @@ class EWIInterface(models.Model):
     def send_message(self):
         """发送各种应用消息"""
         access_token = self.gen_application_access_token()
+        if not access_token:
+            _logger.info(f"创建应用消息-----access_token------凭证为空 {access_token}")
+            return
         token_url = f"https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}"
         data = {
-           # "touser" : "UserID1|UserID2|UserID3",
+           "touser" : "18066043008",
            # "toparty" : "PartyID1|PartyID2",
            # "totag" : "TagID1 | TagID2",
-           # "msgtype" : "text",
+           "msgtype" : "text",
            "agentid" : self.AgentId,
            "text" : {
                "content" : "你的快递已到，请携带工卡前往邮件中心领取。聪明避开排队。"
@@ -259,62 +264,69 @@ class EWIInterface(models.Model):
         """
         人员接口，获取部门成员
         """
-        token = self.gen_access_token()
-        if not token:
+        access_token = self.gen_contacts_access_token()
+        if not access_token:
+            _logger.info(f"创建成员-----access_token------凭证为空 {access_token}")
             return
-        get_employee_url = self.with_user(2).env['ewi.interface'].search([('name', '=', '获取成员ID列表')]).url
-        create_employee_url = self.with_user(2).env['ewi.interface'].search([('name', '=', '创建成员')]).url
+        # 去拿Odoo本地的内部职工
+        employee_obj = self.with_user(2).env['hr.employee']
+        employee_records = employee_obj.search([])
+        odoo_employee_list = [i['mobile_phone'] for i in employee_records]  # odoo中在职人员ID，原则上要求职工号企业内唯一
+        # 去请求企业微信部门职工
+        search_token_url = f"https://qyapi.weixin.qq.com/cgi-bin/user/list_id?access_token={access_token}"
+        response = requests.get(search_token_url, headers=headers)  # 请求企业微信正常使用的部门ID
+        _logger.info(f"企业微信请求职工状态 ----【{response.status_code}】 ----")
+        create_employee_list = []
+        try:
+            if response.status_code == 200:
+                ret = json.loads(response.text)
+                wechat_employee_list = [i['userid'] for i in ret['dept_user']]  # 企业微信在职人员ID
+                create_employee_list = [i for i in odoo_employee_list if i not in wechat_employee_list]  # 需要创建的在职人员ID
+        except Exception as e:
+            _logger.info(f"企业微信请求职工有误 ---- {e} ----")
 
-        employee_records = self.with_user(2).env['staff'].search([])  # ('work_no', 'in', ['110300363', '210901888'])
-        odoo_employee_list = [i['work_no'] for i in employee_records]  # odoo中在职人员ID，原则上要求职工号企业内唯一
-
-        ret = requests.get(get_employee_url.format(token), headers=headers)  # 请求企业微信在职人员ID
-        text = json.loads(ret.text)
-        wechat_employee_list = [i['userid'] for i in text['dept_user']]  # 企业微信在职人员ID
-
-        create_employee_list = [i for i in odoo_employee_list if i not in wechat_employee_list]  # 需要创建的在职人员ID
-
+        # 需要创建的职工ID
+        create_token_url = f"https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token={access_token}"
+        print(create_employee_list)
         for employee in create_employee_list:
-            employee_record = self.with_user(2).env['staff'].search([('work_no', '=', employee)])
-            """填充主部门"""
-            depart_list = [employee_record.department_id.id]
-            """判断是否部门负责人"""
-            if employee_record.department_id.manager_id.id == employee_record.id:
-                is_leader_in_dept_list = [1]
-            else:
-                is_leader_in_dept_list = [0]
-            """设置”成员所属部门id列表“、是否”部门负责人“"""
-            for depart in employee_record.department_ids:
-                depart_list.append(depart.id)
-                is_leader_in_dept_list.append(0)
-            employee_args = {
-                "userid": employee_record.work_no,  # 是, 成员UserID
-                "name": employee_record.name,  # 是, 成员名称
-                "alias": employee_record.work_no,  # 是, 成员别名
-                "mobile": employee_record.work_mobile,  # 手机号码
-                "department": depart_list,  # 成员所属部门id列表
-                "position": employee_record.job_id.name,  # 职务信息
-                "gender": 1 if employee_record.gender == 'male' else 2,  # 性别。1表示男性，2表示女性
-                "email": employee_record.work_email,  # 邮箱
-                "is_leader_in_dept": is_leader_in_dept_list,  # 1表示为部门负责人，0表示非部门负责人
-                "direct_leader": ["%s" % employee_record.parent_id.work_no],  # 直属上级UserID
-                "enable": 0 if employee_record.ewc_enable else 1,  # 启用/禁用成员。1表示启用成员，0表示禁用成员
-                "telephone": employee_record.work_phone or False,  # 座机
-                "address": self.env['res.company'].search([('id', '=', '1')]).street or False,  # 地址
-                "main_department": employee_record.department_id.id,  # 主部门
-                "to_invite": to_invite,  # 是否邀请该成员使用企业微信
+            employee_id = employee_obj.search([('mobile_phone', '=', '18066043008')])
+            print(employee_id)
+            # """填充主部门"""
+            # depart_list = [employee_record.department_id.id]
+            # """判断是否部门负责人"""
+            # if employee_record.department_id.manager_id.id == employee_record.id:
+            #     is_leader_in_dept_list = [1]
+            # else:
+            #     is_leader_in_dept_list = [0]
+            # """设置”成员所属部门id列表“、是否”部门负责人“"""
+            # for depart in employee_record.department_ids:
+            #     depart_list.append(depart.id)
+            #     is_leader_in_dept_list.append(0)
+            data = {
+                "userid": '18066043008',  # 是, 成员UserID
+                "name": employee_id.name,  # 是, 成员名称
+                # "alias": employee_record.work_no,  # 是, 成员别名
+                "mobile": employee_id.mobile_phone,  # 手机号码
+                "department": [22],  # 成员所属部门id列表
+                # "position": employee_record.job_id.name,  # 职务信息
+                # "gender": 1 if employee_record.gender == 'male' else 2,  # 性别。1表示男性，2表示女性
+                # "email": employee_record.work_email,  # 邮箱
+                # "is_leader_in_dept": is_leader_in_dept_list,  # 1表示为部门负责人，0表示非部门负责人
+                # "direct_leader": ["%s" % employee_record.parent_id.work_no],  # 直属上级UserID
+                # "enable": 0 if employee_record.ewc_enable else 1,  # 启用/禁用成员。1表示启用成员，0表示禁用成员
+                # "telephone": employee_record.work_phone or False,  # 座机
+                # "address": self.env['res.company'].search([('id', '=', '1')]).street or False,  # 地址
+                # "main_department": employee_record.department_id.id,  # 主部门
+                # "to_invite": to_invite,  # 是否邀请该成员使用企业微信
             }
-            if employee_record.depart_code == '1' or not employee_record.parent_id.id or not employee_record.job_id.name:
-                del employee_args['direct_leader']
-            if not employee_record.job_id.name:
-                del employee_args['position']
-            if not employee_record.work_email:
-                del employee_args['email']
-            try:
-                ret = requests.post(create_employee_url.format(token), json=employee_args, headers=headers)
-                if json.loads(ret.text)['errcode'] == 0:
-                    _logger.info("创建员工账号成功{}".format(json.loads(ret.text)))
-                else:
-                    _logger.error("创建员工账号失败{}".format(json.loads(ret.text)))
-            except Exception as e:
-                _logger.error(f"创建员工账号时出错: {str(e)}")
+            # if employee_record.depart_code == '1' or not employee_record.parent_id.id or not employee_record.job_id.name:
+            #     del employee_args['direct_leader']
+            # if not employee_record.job_id.name:
+            #     del employee_args['position']
+            # if not employee_record.work_email:
+            #     del employee_args['email']
+            ret = requests.post(create_token_url, data=json.dumps(data), headers=headers)
+            if ret.status_code == 200:
+                _logger.info("创建职工成功{}".format(json.loads(ret.text)))
+            else:
+                _logger.error("创建职工失败{}".format(json.loads(ret.text)))

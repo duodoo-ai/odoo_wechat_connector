@@ -6,7 +6,7 @@
         <!-- 授权信息 -->
         <record id="ewi_wechat_config_0" model="ewi.wechat.config">
             <field name="name">企业微信接口</field>
-            <field name="corp_id">ww5a789309ca91ec7e</field>
+            <field name="corp_id">wwc87ed859c36005b2</field>
 
             <field name="sp_AgentId">3010040</field>
             <field name="sp_Secret">ub3ELV5X9d1JGkwmC9If_qr0szG78ogYBnGKZnCQPEg</field>
@@ -20,15 +20,15 @@
         <record id="ewi_interface_09" model="ewi.interface">
             <field name="name">通讯录同步授权</field>
             <field name="description">通讯录授权AccessToken同步</field>
-            <field name="Secret">njqm0RDRzZAdNeSGqUpuAMbiQ2g6iQQzdPQphLt0cpU</field>
+            <field name="Secret">BpyDeb-GL31I9K9BXNMd2XRRxDZ1gHPWL5EQ7_5FN7Q</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid={}&amp;corpsecret={}</field>
         </record>
          <!-- 应用消息 -->
         <record id="ewi_interface_10" model="ewi.interface">
-            <field name="name">发送应用消息</field>
-            <field name="description">发送应用消息</field>
+            <field name="name">R2</field>
+            <field name="description">发送各种应用消息啦</field>
             <field name="AgentId">1000008</field>
-            <field name="Secret">TbIuS1j9bdGRbOe3OycUq9tAhC0H04EFIPVK5boR_3k</field>
+            <field name="Secret">hrkV1uUYq7twe_1Q9RsZFW3yzPqM2Up-iyg6pbkIonA</field>
             <field name="url">https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={}</field>
             <field name="access_token">''</field>
         </record>
